@@ -1,0 +1,991 @@
+# 🚀 Unified Master Prompt for Base44
+
+You are tasked with designing and building **Base44**, a **mobile marketplace app** with an integrated crypto token called **Bloom**. The app enables **multi-merchant shopping, crypto rewards, delivery, and legally compliant hemp/THC-A product ordering.**
+
+---
+
+## 📊 Business Requirements
+- Merchants can upload and manage inventory (CSV/manual).
+- Customers can browse across multiple merchants, add items to cart, and check out in one order.
+- Bloom tokens serve as rewards, payments, and trading currency.
+- Customers can earn Bloom (cashback, referrals, reviews) and spend it (products, delivery, promotions).
+- Delivery service with standard and express options + real-time tracking.
+- **Special Category:** Hemp & THC-A products delivery (where legal).
+- Monetization: sales commission, delivery fees, premium merchant plans, token trading fees.
+- KPIs: active merchants, DAU/MAU, Bloom transaction volume, delivery success rate.
+
+---
+
+## ⚙️ Developer / Technical Requirements
+- **Frontend:** React Native (iOS + Android).
+- **Backend:** Node.js + PostgreSQL + GraphQL/REST.
+- **Blockchain:** ERC-20 Bloom token (Ethereum or Layer-2).
+- **Wallet:** In-app wallet with encryption (AES + biometric).
+- **Payments:** Stripe (fiat) + Web3 wallet (crypto).
+- **Delivery:** Logistics API integration + Google Maps SDK.
+- **Security & Compliance:**
+  - KYC for merchants/delivery partners.
+  - AML checks for Bloom trading.
+  - GDPR compliance.
+  - **Age Verification (21+) for hemp/THC-A purchases.**
+  - **Geofencing to restrict hemp/THC-A delivery to legal jurisdictions only.**
+- **Performance Targets:**
+  - API < 300ms response.
+  - Wallet tx confirmation < 5s.
+  - 99.9% uptime.
+
+---
+
+## 🗂️ Epics & Prioritized User Stories
+
+### Epic 1: Shopping (High Priority)
+- Browse merchants by category (including “Hemp & Wellness”).
+- Add multi-merchant items into one cart.
+- Checkout with fiat + Bloom.
+- **[H] As a customer, I want to verify my age and location before purchasing hemp/THC-A so that I comply with legal restrictions.**
+
+### Epic 2: Bloom Token (High Priority)
+- Earn Bloom via purchases, referrals, reviews.
+- View Bloom wallet balance + history.
+- Trade Bloom P2P.
+- Merchants can offer Bloom promotions.
+- **[M] As a customer, I want to earn Bloom tokens on hemp/THC-A purchases so that I stay engaged as a buyer.**
+
+### Epic 3: Delivery (High Priority)
+- Choose standard or express delivery.
+- Real-time delivery tracking on map.
+- Delivery partners accept/update jobs.
+- Delivery earnings in fiat + Bloom.
+- **[H] As a delivery partner, I want to verify ID upon hemp/THC-A delivery so that only legal customers receive the order.**
+
+### Epic 4: Merchant Tools (High Priority)
+- Store profile setup.
+- Inventory upload (manual/CSV).
+- Analytics on sales, orders, Bloom usage.
+- Payments in fiat + Bloom.
+- **[H] As a hemp/THC-A merchant, I want compliance features (age verification, legal region restrictions) so that I can sell safely.**
+
+### Epic 5: Admin Tools (Medium Priority)
+- Verify merchants & delivery partners.
+- Monitor Bloom token transactions.
+- Dispute resolution.
+- Enforce AML/KYC compliance.
+- Usage analytics dashboard.
+- **[H] As an admin, I want to enforce local laws on hemp/THC-A so that Base44 operates legally.**
+
+---
+
+## 🎯 Implementation Roadmap
+
+**MVP (Sprints 1–2):**
+- Merchant onboarding + product upload.
+- Customer browsing, cart, checkout (fiat only).
+- Delivery partner registration + basic order assignment.
+
+**Core Expansion (Sprints 3–4):**
+- Bloom wallet: earn + spend tokens.
+- Hybrid checkout (fiat + Bloom).
+- Delivery tracking (map + push notifications).
+- Hemp/THC-A compliance: age verification, geofencing.
+
+**Engagement (Sprints 5–6):**
+- P2P Bloom trading.
+- Merchant promotions in Bloom.
+- Referral rewards.
+- Hemp/THC-A ID verification on delivery.
+
+**Scaling (Sprint 7+):**
+- Loyalty tiers.
+- Sponsored merchant listings.
+- Advanced analytics.
+- Admin dashboards & compliance tools.
+
+---
+
+## ✅ Gherkin Acceptance Criteria
+
+### 🛒 Customer – Age & Location Verification
+```gherkin
+Feature: Age and location verification for hemp/THC-A orders
+  Scenario: Customer below legal age tries to purchase
+    Given I am logged in as a customer under 21
+    When I add a hemp/THC-A product to my cart
+    Then I should see "You must be 21+ to purchase this item"
+    And I should not be able to check out with this item
+
+  Scenario: Customer outside legal delivery zone
+    Given I am logged in as a verified customer 21+
+    And my delivery address is outside a legal hemp/THC-A zone
+    When I add a hemp/THC-A product to my cart
+    Then I should see "This product is not available in your region"
+    And I should not be able to check out with this item
+
+  Scenario: Customer meets all requirements
+    Given I am logged in as a verified customer 21+
+    And my delivery address is in a legal hemp/THC-A zone
+    When I add a hemp/THC-A product to my cart
+    And proceed to checkout
+    Then my order should be accepted
+Feature: Bloom rewards for hemp/THC-A purchases
+  Scenario: Customer purchases hemp/THC-A item
+    Given I am a verified customer 21+
+    And I have completed checkout with hemp/THC-A items
+    When my order is confirmed
+    Then I should receive Bloom tokens in my wallet
+    And my token balance should increase
+Feature: ID verification at delivery
+  Scenario: Customer does not provide valid ID
+    Given I am a delivery partner with a hemp/THC-A order
+    When I attempt delivery to the customer
+    And the customer cannot provide a valid government-issued ID
+    Then I must mark the order as "Failed Delivery"
+    And the system should notify the merchant and admin
+
+  Scenario: Customer provides valid ID
+    Given I am a delivery partner with a hemp/THC-A order
+    When I attempt delivery to the customer
+    And the customer provides a valid government-issued ID showing age 21+
+    Then I can mark the order as "Delivered"
+    And the customer should receive the items
+Feature: Merchant custom quest
+  Scenario: Merchant sets up quest
+    Given I am a verified merchant
+    When I create a custom quest (e.g., Buy 3 coffees, earn 20 Bloom)
+    Then customers should see it under available quests
+    And rewards should be funded from my promo wallet
+Feature: Admin compliance enforcement
+  Scenario: Admin reviews merchant product listing
+    Given I am an admin
+    When I view a merchant's hemp/THC-A listing
+    Then I should see compliance details (age restriction, region restriction)
+    And I should be able to approve or reject the listing
+Feature: Admin compliance enforcement
+  Scenario: Admin reviews merchant product listing
+    Given I am an admin
+    When I view a merchant's hemp/THC-A listing
+    Then I should see compliance details (age restriction, region restriction)
+    And I should be able to approve or reject the listing
+ Scenario: Admin monitors deliveries
+    Given I am an admin
+    When I view hemp/THC-A delivery records
+    Then I should see ID verification logs for each completed order
+  Scenario: Admin monitors deliveries
+    Given I am an admin
+    When I view hemp/THC-A delivery records
+    Then I should see ID verification logs for each completed order
+## 🎮 Gamification Layer for Base44
+
+### Business Goals
+- Increase customer retention through game-like engagement.
+- Drive Bloom token usage beyond basic rewards.
+- Give merchants tools to gamify shopping, reviews, and referrals.
+- Create viral growth loops with social + competitive features.
+
+---
+
+### Key Gamification Features
+
+1. **XP & Levels**
+   - Customers earn XP for purchases, referrals, reviews, and daily app use.
+   - Level progression unlocks perks (discounts, delivery credits, Bloom multipliers).
+   - Visible "Level Badge" on customer profile.
+
+2. **Daily & Weekly Quests**
+   - Missions like:
+     - “Spend 50 Bloom this week”
+     - “Order from 2 new merchants”
+     - “Write 3 reviews”
+   - Completing quests grants Bloom bonuses or delivery credits.
+
+3. **Leaderboards**
+   - Categories: Top Buyers, Top Referrers, Top Reviewers, Top Bloom Holders.
+   - Weekly/monthly leaderboards reset with token + badge rewards.
+
+4. **Achievement Badges**
+   - Example badges:
+     - 🥇 “First Bloom Spent”
+     - 🚚 “10 Deliveries Received”
+     - 🌿 “Verified Hemp Purchaser”
+     - 💎 “100 Bloom Earned”
+   - Badges displayed on profile and shareable on social.
+
+5. **Spin-the-Wheel / Loot Box**
+   - After certain actions (purchase, review, referral), customers get a “spin” or “box.”
+   - Randomized rewards: Bloom tokens, merchant coupons, free delivery.
+
+6. **Merchant Gamification Tools**
+   - Merchants can create custom quests for customers (e.g., “Buy 3 coffees this week, earn 20 Bloom”).
+   - Merchants fund Bloom rewards from their promo wallet.
+
+7. **Delivery Partner Gamification**
+   - Drivers earn badges + Bloom boosts for on-time deliveries, high ratings, and number of successful ID verifications for hemp/THC-A.
+
+---
+
+### Gherkin Acceptance Criteria (Gamification)
+
+#### Customer XP & Levels
+```gherkin
+Feature: Customer leveling system
+  Scenario: Customer earns XP from purchase
+    Given I am a customer
+    When I complete an order
+    Then I should earn XP
+    And my profile level should update if I pass the threshold
+Feature: Quest completion
+  Scenario: Customer completes a daily quest
+    Given I am a customer
+    And I view my quest list
+    When I complete the action required by a quest
+    Then I should see the quest marked as completed
+    And I should receive the reward in Bloom tokens
+Feature: Weekly leaderboard reset
+  Scenario: End of weekly leaderboard cycle
+    Given I am a customer on the leaderboard
+    When the leaderboard cycle ends
+    Then I should receive Bloom rewards if I ranked in the top 10
+    And the leaderboard should reset for the next cycle
+Feature: Badge unlocking
+  Scenario: Customer unlocks badge
+    Given I am a customer
+    When I complete an action tied to a badge (e.g., 10 orders)
+    Then I should see the badge appear in my profile
+    And I should be notified with a Bloom bonus if applicable
+Feature: Merchant custom quest
+  Scenario: Merchant sets up quest
+    Given I am a verified merchant
+    When I create a custom quest (e.g., Buy 3 coffees, earn 20 Bloom)
+    Then customers should see it under available quests
+    And rewards should be funded from my promo wallet
+
+---
+
+⚡ With this, Base44 now has **shopping, crypto, delivery, compliance, AND gamification** tied together in one ecosystem.  
+
+👉 Do you also want me to **expand the database schema** to include **gamification tables** (XP, quests, badges, leaderboards) so your devs can implement it smoothly?
+# 🗄️ Base44 Database Schema (with Gamification)
+
+## 1. Core Entities
+
+### Users
+| Column             | Type        | Notes                                 |
+|--------------------|------------|---------------------------------------|
+| user_id (PK)       | UUID       | Unique user identifier                |
+| name               | VARCHAR    | Full name                             |
+| email              | VARCHAR    | Unique, required                      |
+| password_hash      | VARCHAR    | Secure hash                           |
+| role               | ENUM       | customer / merchant / driver / admin  |
+| kyc_status         | ENUM       | pending / verified / rejected         |
+| age_verified       | BOOLEAN    | Required for hemp/THC-A purchases     |
+| region             | VARCHAR    | For geofencing                        |
+| created_at         | TIMESTAMP  |                                       |
+
+---
+
+### Merchants
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| merchant_id (PK)   | UUID       |                                      |
+| user_id (FK)       | UUID       | Link to Users                        |
+| store_name         | VARCHAR    |                                      |
+| compliance_level   | ENUM       | hemp_verified / general              |
+| promo_wallet       | DECIMAL    | Bloom balance for quests/promotions  |
+| created_at         | TIMESTAMP  |                                      |
+
+---
+
+### Products
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| product_id (PK)    | UUID       |                                      |
+| merchant_id (FK)   | UUID       |                                      |
+| name               | VARCHAR    |                                      |
+| description        | TEXT       |                                      |
+| category           | VARCHAR    | e.g., food, hemp, electronics        |
+| price              | DECIMAL    |                                      |
+| bloom_eligible     | BOOLEAN    | Earn/spend Bloom                     |
+| restricted_21_plus | BOOLEAN    | Hemp/THC-A compliance flag           |
+| region_restricted  | BOOLEAN    | For legal delivery zones             |
+| created_at         | TIMESTAMP  |                                      |
+
+---
+
+### Orders
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| order_id (PK)      | UUID       |                                      |
+| user_id (FK)       | UUID       | Customer                             |
+| delivery_id (FK)   | UUID       | Delivery link                        |
+| status             | ENUM       | pending / paid / delivered / failed  |
+| total_amount       | DECIMAL    |                                      |
+| bloom_spent        | DECIMAL    | Amount of Bloom tokens used          |
+| bloom_earned       | DECIMAL    | Tokens rewarded                      |
+| created_at         | TIMESTAMP  |                                      |
+
+---
+
+### Deliveries
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| delivery_id (PK)   | UUID       |                                      |
+| order_id (FK)      | UUID       |                                      |
+| driver_id (FK)     | UUID       | From Users table                     |
+| status             | ENUM       | assigned / in_progress / delivered   |
+| id_verified        | BOOLEAN    | Required for hemp/THC-A              |
+| verification_log   | JSONB      | Snapshot of ID check event           |
+| created_at         | TIMESTAMP  |                                      |
+
+---
+
+### Bloom Wallet
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| wallet_id (PK)     | UUID       |                                      |
+| user_id (FK)       | UUID       |                                      |
+| balance            | DECIMAL    | Bloom tokens                         |
+| created_at         | TIMESTAMP  |                                      |
+
+---
+
+### Bloom Transactions
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| tx_id (PK)         | UUID       |                                      |
+| wallet_id (FK)     | UUID       |                                      |
+| type               | ENUM       | earn / spend / trade / promo         |
+| amount             | DECIMAL    |                                      |
+| reference_id       | UUID       | Order/Quest/Promo link               |
+| created_at         | TIMESTAMP  |                                      |
+
+---
+
+## 2. Gamification Entities
+
+### XP & Levels
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| xp_id (PK)         | UUID       |                                      |
+| user_id (FK)       | UUID       |                                      |
+| current_xp         | INT        | Total XP earned                      |
+| level              | INT        | Current level                        |
+| updated_at         | TIMESTAMP  |                                      |
+
+---
+
+### Quests
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| quest_id (PK)      | UUID       |                                      |
+| created_by         | UUID       | Merchant or Admin                    |
+| title              | VARCHAR    | Quest name                           |
+| description        | TEXT       | Quest instructions                   |
+| type               | ENUM       | daily / weekly / merchant_custom     |
+| action_required    | JSONB      | e.g., buy_3_items, refer_friend      |
+| reward_bloom       | DECIMAL    | Bloom reward                         |
+| expires_at         | TIMESTAMP  |                                      |
+| created_at         | TIMESTAMP  |                                      |
+
+---
+
+### Quest Completions
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| completion_id (PK) | UUID       |                                      |
+| quest_id (FK)      | UUID       |                                      |
+| user_id (FK)       | UUID       |                                      |
+| status             | ENUM       | started / completed / rewarded       |
+| reward_tx_id (FK)  | UUID       | Link to Bloom Transactions           |
+| completed_at       | TIMESTAMP  |                                      |
+
+---
+
+### Badges
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| badge_id (PK)      | UUID       |                                      |
+| name               | VARCHAR    | Badge name                           |
+| description        | TEXT       |                                      |
+| criteria           | JSONB      | e.g., {“orders”: 10}                 |
+| reward_bloom       | DECIMAL    | Optional token reward                |
+| created_at         | TIMESTAMP  |                                      |
+
+---
+
+### User Badges
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| user_badge_id (PK) | UUID       |                                      |
+| badge_id (FK)      | UUID       |                                      |
+| user_id (FK)       | UUID       |                                      |
+| unlocked_at        | TIMESTAMP  |                                      |
+
+---
+
+### Leaderboards
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| leaderboard_id (PK)| UUID       |                                      |
+| type               | ENUM       | buyers / referrers / reviewers / bloom|
+| period             | ENUM       | weekly / monthly                     |
+| start_date         | TIMESTAMP  |                                      |
+| end_date           | TIMESTAMP  |                                      |
+
+---
+
+### Leaderboard Entries
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| entry_id (PK)      | UUID       |                                      |
+| leaderboard_id (FK)| UUID       |                                      |
+| user_id (FK)       | UUID       |                                      |
+| score              | INT        | XP / purchases / referrals           |
+| rank               | INT        |                                      |
+
+---
+
+## 3. Compliance Entities (Hemp/THC-A)
+
+### Compliance Logs
+| Column             | Type        | Notes                                |
+|--------------------|------------|--------------------------------------|
+| log_id (PK)        | UUID       |                                      |
+| user_id (FK)       | UUID       |                                      |
+| action             | ENUM       | age_verification / id_check / geo    |
+| status             | ENUM       | success / failed                     |
+| metadata           | JSONB      | ID scan details, geo info, etc.      |
+| created_at         | TIMESTAMP  |                                      |
+erDiagram
+
+    %% Core Users and Merchants
+    USERS {
+        UUID user_id PK
+        VARCHAR name
+        VARCHAR email
+        VARCHAR password_hash
+        ENUM role
+        ENUM kyc_status
+        BOOLEAN age_verified
+        VARCHAR region
+        TIMESTAMP created_at
+    }
+
+    MERCHANTS {
+        UUID merchant_id PK
+        UUID user_id FK
+        VARCHAR store_name
+        ENUM compliance_level
+        DECIMAL promo_wallet
+        TIMESTAMP created_at
+    }
+
+    PRODUCTS {
+        UUID product_id PK
+        UUID merchant_id FK
+        VARCHAR name
+        TEXT description
+        VARCHAR category
+        DECIMAL price
+        BOOLEAN bloom_eligible
+        BOOLEAN restricted_21_plus
+        BOOLEAN region_restricted
+        TIMESTAMP created_at
+    }
+
+    ORDERS {
+        UUID order_id PK
+        UUID user_id FK
+        UUID delivery_id FK
+        ENUM status
+        DECIMAL total_amount
+        DECIMAL bloom_spent
+        DECIMAL bloom_earned
+        TIMESTAMP created_at
+    }
+
+    DELIVERIES {
+        UUID delivery_id PK
+        UUID order_id FK
+        UUID driver_id FK
+        ENUM status
+        BOOLEAN id_verified
+        JSONB verification_log
+        TIMESTAMP created_at
+    }
+
+    %% Bloom Token System
+    BLOOM_WALLET {
+        UUID wallet_id PK
+        UUID user_id FK
+        DECIMAL balance
+        TIMESTAMP created_at
+    }
+
+    BLOOM_TRANSACTIONS {
+        UUID tx_id PK
+        UUID wallet_id FK
+        ENUM type
+        DECIMAL amount
+        UUID reference_id
+        TIMESTAMP created_at
+    }
+
+    %% Gamification
+    XP_LEVELS {
+        UUID xp_id PK
+        UUID user_id FK
+        INT current_xp
+        INT level
+        TIMESTAMP updated_at
+    }
+
+    QUESTS {
+        UUID quest_id PK
+        UUID created_by
+        VARCHAR title
+        TEXT description
+        ENUM type
+        JSONB action_required
+        DECIMAL reward_bloom
+        TIMESTAMP expires_at
+        TIMESTAMP created_at
+    }
+
+    QUEST_COMPLETIONS {
+        UUID completion_id PK
+        UUID quest_id FK
+        UUID user_id FK
+        ENUM status
+        UUID reward_tx_id FK
+        TIMESTAMP completed_at
+    }
+
+    BADGES {
+        UUID badge_id PK
+        VARCHAR name
+        TEXT description
+        JSONB criteria
+        DECIMAL reward_bloom
+        TIMESTAMP created_at
+    }
+
+    USER_BADGES {
+        UUID user_badge_id PK
+        UUID badge_id FK
+        UUID user_id FK
+        TIMESTAMP unlocked_at
+    }
+
+    LEADERBOARDS {
+        UUID leaderboard_id PK
+        ENUM type
+        ENUM period
+        TIMESTAMP start_date
+        TIMESTAMP end_date
+    }
+
+    LEADERBOARD_ENTRIES {
+        UUID entry_id PK
+        UUID leaderboard_id FK
+        UUID user_id FK
+        INT score
+        INT rank
+    }
+
+    %% Compliance
+    COMPLIANCE_LOGS {
+        UUID log_id PK
+        UUID user_id FK
+        ENUM action
+        ENUM status
+        JSONB metadata
+        TIMESTAMP created_at
+    }
+
+    %% Relationships
+    USERS ||--o{ MERCHANTS : "owns"
+    USERS ||--o{ ORDERS : "places"
+    USERS ||--o{ BLOOM_WALLET : "has"
+    USERS ||--o{ XP_LEVELS : "earns"
+    USERS ||--o{ QUEST_COMPLETIONS : "completes"
+    USERS ||--o{ USER_BADGES : "unlocks"
+    USERS ||--o{ LEADERBOARD_ENTRIES : "appears in"
+    USERS ||--o{ COMPLIANCE_LOGS : "generates"
+
+    MERCHANTS ||--o{ PRODUCTS : "lists"
+    PRODUCTS ||--o{ ORDERS : "in"
+    ORDERS ||--o{ DELIVERIES : "has"
+
+    BLOOM_WALLET ||--o{ BLOOM_TRANSACTIONS : "records"
+    QUESTS ||--o{ QUEST_COMPLETIONS : "tracked"
+    BADGES ||--o{ USER_BADGES : "awarded"
+    LEADERBOARDS ||--o{ LEADERBOARD_ENTRIES : "contains"
+-- USERS
+INSERT INTO users (user_id, name, email, password_hash, role, kyc_status, age_verified, region, created_at) VALUES
+('u1', 'Alice Johnson', 'alice@example.com', 'hashed_pw1', 'customer', 'verified', TRUE, 'CA', NOW()),
+('u2', 'Bob Smith', 'bob@example.com', 'hashed_pw2', 'merchant', 'verified', TRUE, 'CA', NOW()),
+('u3', 'Carlos Rivera', 'carlos@example.com', 'hashed_pw3', 'driver', 'verified', TRUE, 'CA', NOW()),
+('u4', 'Dana Lee', 'dana@example.com', 'hashed_pw4', 'admin', 'verified', TRUE, 'US', NOW());
+
+-- MERCHANTS
+INSERT INTO merchants (merchant_id, user_id, store_name, compliance_level, promo_wallet, created_at) VALUES
+('m1', 'u2', 'GreenLeaf Wellness', 'hemp_verified', 500.00, NOW());
+
+-- PRODUCTS
+INSERT INTO products (product_id, merchant_id, name, description, category, price, bloom_eligible, restricted_21_plus, region_restricted, created_at) VALUES
+('p1', 'm1', 'Organic CBD Oil', '500mg full spectrum CBD oil', 'Hemp & Wellness', 49.99, TRUE, TRUE, TRUE, NOW()),
+('p2', 'm1', 'THC-A Gummies', '10mg THC-A per gummy (legal delivery zones only)', 'Hemp & Wellness', 29.99, TRUE, TRUE, TRUE, NOW()),
+('p3', 'm1', 'Vegan Protein Powder', 'Plant-based protein mix', 'Supplements', 19.99, TRUE, FALSE, FALSE, NOW());
+
+-- BLOOM WALLETS
+INSERT INTO bloom_wallet (wallet_id, user_id, balance, created_at) VALUES
+('w1', 'u1', 150.00, NOW()),
+('w2', 'u2', 1000.00, NOW()),
+('w3', 'u3', 50.00, NOW());
+
+-- BLOOM TRANSACTIONS
+INSERT INTO bloom_transactions (tx_id, wallet_id, type, amount, reference_id, created_at) VALUES
+('t1', 'w1', 'earn', 20.00, 'order123', NOW()),
+('t2', 'w1', 'spend', 10.00, 'order124', NOW());
+
+-- GAMIFICATION QUESTS
+INSERT INTO quests (quest_id, created_by, title, description, type, action_required, reward_bloom, expires_at, created_at) VALUES
+('q1', 'u4', 'Daily Buyer', 'Make 1 purchase today to earn 5 Bloom', 'daily', '{"action":"purchase","count":1}', 5, NOW() + interval '1 day', NOW()),
+('q2', 'm1', 'Hemp Explorer', 'Buy 2 hemp products from GreenLeaf Wellness', 'merchant_custom', '{"action":"purchase","product_category":"Hemp & Wellness","count":2}', 15, NOW() + interval '7 days', NOW());
+
+-- BADGES
+INSERT INTO badges (badge_id, name, description, criteria, reward_bloom, created_at) VALUES
+('b1', 'First Bloom Spent', 'Awarded for spending Bloom for the first time', '{"bloom_spent":1}', 5, NOW()),
+('b2', 'Verified Hemp Purchaser', 'Awarded for completing 3 hemp purchases', '{"hemp_purchases":3}', 20, NOW());
+
+-- LEADERBOARD
+INSERT INTO leaderboards (leaderboard_id, type, period, start_date, end_date) VALUES
+('lb1', 'buyers', 'weekly', NOW(), NOW() + interval '7 days');
+
+INSERT INTO leaderboard_entries (entry_id, leaderboard_id, user_id, score, rank) VALUES
+('le1', 'lb1', 'u1', 120, 1);
+
+-- COMPLIANCE LOGS
+INSERT INTO compliance_logs (log_id, user_id, action, status, metadata, created_at) VALUES
+('c1', 'u1', 'age_verification', 'success', '{"method":"ID scan","result":"21+"}', NOW()),
+('c2', 'u3', 'id_check', 'success', '{"order":"order123","customer":"u1"}', NOW());
+{
+  "users": [
+    { "user_id": "u1", "name": "Alice Johnson", "email": "alice@example.com", "role": "customer", "age_verified": true, "region": "CA" },
+    { "user_id": "u2", "name": "Bob Smith", "email": "bob@example.com", "role": "merchant", "age_verified": true, "region": "CA" },
+    { "user_id": "u3", "name": "Carlos Rivera", "email": "carlos@example.com", "role": "driver", "age_verified": true, "region": "CA" },
+    { "user_id": "u4", "name": "Dana Lee", "email": "dana@example.com", "role": "admin", "age_verified": true, "region": "US" }
+  ],
+  "merchants": [
+    { "merchant_id": "m1", "user_id": "u2", "store_name": "GreenLeaf Wellness", "compliance_level": "hemp_verified", "promo_wallet": 500 }
+  ],
+  "products": [
+    { "product_id": "p1", "merchant_id": "m1", "name": "Organic CBD Oil", "category": "Hemp & Wellness", "price": 49.99, "bloom_eligible": true, "restricted_21_plus": true, "region_restricted": true },
+    { "product_id": "p2", "merchant_id": "m1", "name": "THC-A Gummies", "category": "Hemp & Wellness", "price": 29.99, "bloom_eligible": true, "restricted_21_plus": true, "region_restricted": true },
+    { "product_id": "p3", "merchant_id": "m1", "name": "Vegan Protein Powder", "category": "Supplements", "price": 19.99, "bloom_eligible": true, "restricted_21_plus": false, "region_restricted": false }
+  ],
+  "wallets": [
+    { "wallet_id": "w1", "user_id": "u1", "balance": 150 },
+    { "wallet_id": "w2", "user_id": "u2", "balance": 1000 },
+    { "wallet_id": "w3", "user_id": "u3", "balance": 50 }
+  ],
+  "transactions": [
+    { "tx_id": "t1", "wallet_id": "w1", "type": "earn", "amount": 20, "reference_id": "order123" },
+    { "tx_id": "t2", "wallet_id": "w1", "type": "spend", "amount": 10, "reference_id": "order124" }
+  ],
+  "quests": [
+    { "quest_id": "q1", "title": "Daily Buyer", "type": "daily", "action_required": { "action": "purchase", "count": 1 }, "reward_bloom": 5 },
+    { "quest_id": "q2", "title": "Hemp Explorer", "type": "merchant_custom", "action_required": { "action": "purchase", "product_category": "Hemp & Wellness", "count": 2 }, "reward_bloom": 15 }
+  ],
+  "badges": [
+    { "badge_id": "b1", "name": "First Bloom Spent", "criteria": { "bloom_spent": 1 }, "reward_bloom": 5 },
+    { "badge_id": "b2", "name": "Verified Hemp Purchaser", "criteria": { "hemp_purchases": 3 }, "reward_bloom": 20 }
+  ],
+  "leaderboards": [
+    { "leaderboard_id": "lb1", "type": "buyers", "period": "weekly", "entries": [{ "user_id": "u1", "score": 120, "rank": 1 }] }
+  ],
+  "compliance_logs": [
+    { "log_id": "c1", "user_id": "u1", "action": "age_verification", "status": "success", "metadata": { "method": "ID scan", "result": "21+" } },
+    { "log_id": "c2", "user_id": "u3", "action": "id_check", "status": "success", "metadata": { "order": "order123", "customer": "u1" } }
+  ]
+}
+openapi: 3.0.3
+info:
+  title: Base44 API
+  description: >
+    API for Base44 platform: shopping, merchants, delivery, Bloom token economy,
+    gamification, and hemp/THC-A compliance.
+  version: 1.0.0
+servers:
+  - url: https://api.base44.com/v1
+
+tags:
+  - name: Users
+  - name: Merchants
+  - name: Products
+  - name: Orders
+  - name: Delivery
+  - name: Bloom Wallet
+  - name: Gamification
+  - name: Compliance
+
+paths:
+  /users:
+    post:
+      tags: [Users]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /merchants/{merchantId}/products:
+    get:
+      tags: [Products]
+      summary: List merchant's products
+      parameters:
+        - name: merchantId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Product' }
+
+    post:
+      tags: [Products]
+      summary: Add a product
+      parameters:
+        - name: merchantId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '201':
+          description: Product added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /orders:
+    post:
+      tags: [Orders]
+      summary: Create an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /deliveries/{deliveryId}/verify-id:
+    post:
+      tags: [Delivery]
+      summary: Verify ID for hemp/THC-A order
+      parameters:
+        - name: deliveryId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_scan_result: { type: string }
+      responses:
+        '200':
+          description: ID verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplianceLog'
+
+  /wallets/{userId}:
+    get:
+      tags: [Bloom Wallet]
+      summary: Get user's Bloom wallet
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Wallet balance and transactions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+
+  /quests:
+    get:
+      tags: [Gamification]
+      summary: List available quests
+      responses:
+        '200':
+          description: Active quests
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Quest' }
+
+  /leaderboards/{type}:
+    get:
+      tags: [Gamification]
+      summary: Get leaderboard by type
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [buyers, referrers, bloom]
+      responses:
+        '200':
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/LeaderboardEntry' }
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        user_id: { type: string }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [customer, merchant, driver, admin] }
+        age_verified: { type: boolean }
+
+    UserInput:
+      type: object
+      required: [name, email, role]
+      properties:
+        name: { type: string }
+        email: { type: string }
+        password: { type: string }
+        role: { type: string }
+
+    Product:
+      type: object
+      properties:
+        product_id: { type: string }
+        merchant_id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        category: { type: string }
+        price: { type: number }
+        bloom_eligible: { type: boolean }
+        restricted_21_plus: { type: boolean }
+
+    ProductInput:
+      type: object
+      required: [name, price]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        category: { type: string }
+        price: { type: number }
+        bloom_eligible: { type: boolean }
+        restricted_21_plus: { type: boolean }
+
+    Order:
+      type: object
+      properties:
+        order_id: { type: string }
+        user_id: { type: string }
+        total_amount: { type: number }
+        bloom_spent: { type: number }
+        bloom_earned: { type: number }
+        status: { type: string }
+
+    OrderInput:
+      type: object
+      required: [user_id, products]
+      properties:
+        user_id: { type: string }
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id: { type: string }
+              quantity: { type: integer }
+
+    Wallet:
+      type: object
+      properties:
+        wallet_id: { type: string }
+        user_id: { type: string }
+        balance: { type: number }
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+
+    Transaction:
+      type: object
+      properties:
+        tx_id: { type: string }
+        type: { type: string, enum: [earn, spend, trade, promo] }
+        amount: { type: number }
+        reference_id: { type: string }
+
+    Quest:
+      type: object
+      properties:
+        quest_id: { type: string }
+        title: { type: string }
+        description: { type: string }
+        type: { type: string }
+        action_required: { type: object }
+        reward_bloom: { type: number }
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        user_id: { type: string }
+        score: { type: integer }
+        rank: { type: integer }
+
+    ComplianceLog:
+      type: object
+      properties:
+        log_id: { type: string }
+        user_id: { type: string }
+        action: { type: string }
+        status: { type: string }
+        metadata: { type: object }
